@@ -12,7 +12,7 @@ import library.models.User;
 public class test {
     
     public static void main(String[] args) {
-        System.out.println("🚀 بدء تجربة إرسال الإيميل...");
+        System.out.println("🚀  tبدء تجربة إرسال الإيميل...");
         
         // 1. إعداد配置 الإيميل (استبدل بالبيانات الحقيقية)
         EmailConfig emailConfig = new EmailConfig();
