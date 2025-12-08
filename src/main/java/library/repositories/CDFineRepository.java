@@ -6,6 +6,7 @@ import library.utils.GsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,8 +66,10 @@ public class CDFineRepository {
      * @return generated ID
      */
     private String generateId() {
-        return "CDFINE_" + System.currentTimeMillis() + "_" + new Random().nextInt(1000);
+        SecureRandom secureRandom = new SecureRandom(); // إنشاء كائن SecureRandom
+        return "CDFINE_" + System.currentTimeMillis() + "_" + secureRandom.nextInt(1000); // توليد المعرف
     }
+
 
     /**
      * Save CD fine to repository
