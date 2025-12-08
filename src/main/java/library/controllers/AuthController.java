@@ -1,8 +1,6 @@
 package library.controllers;
 
-
-     
- import library.services.AuthService;
+import library.services.AuthService;
 import library.services.NotificationService;
 import library.models.User;
 
@@ -79,6 +77,3 @@ public class AuthController {
         return authService.isAdmin();
     }
 }
-
-
-

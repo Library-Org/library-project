@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import library.utils.DateUtils;
 
 import java.time.LocalDateTime;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class CDTest {
 
@@ -75,12 +77,22 @@ public class CDTest {
         assertNotEquals(cd.getCreatedAt(), cd.getUpdatedAt());
     }
 
+    
+
     @Test
     public void testUpdateTimestamp() {
-        // التحقق من تحديث `updatedAt` بعد استدعاء `updateTimestamp()`
-        String initialUpdatedAt = cd.getUpdatedAt();
-        cd.updateTimestamp();
-        assertNotEquals(initialUpdatedAt, cd.getUpdatedAt());
+        String initialUpdatedAt = cd.getUpdatedAt();  // التاريخ المبدئي
+        cd.updateTimestamp();  // استدعاء الدالة التي يجب أن تغير التاريخ
+        String updatedAt = cd.getUpdatedAt();  // التاريخ بعد التحديث
+
+        // تحويل التواريخ إلى LocalDateTime للمقارنة بدون الدقة الدقيقة
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        LocalDateTime initialDateTime = LocalDateTime.parse(initialUpdatedAt, formatter);
+        LocalDateTime updatedDateTime = LocalDateTime.parse(updatedAt, formatter);
+
+        // التأكد من أن التاريخ قد تغير
+        assertNotEquals(initialDateTime, updatedDateTime);
     }
+
 }
 
