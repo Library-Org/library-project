@@ -159,4 +159,39 @@ class BookRepositoryTest {
         Book updated = bookRepository.findById(savedBook.getId());
         assertEquals("Updated Title", updated.getTitle());
     }
+
+    
+    @Test
+    void shouldReturnAllBooksWhenSearchQueryIsEmpty() {
+        when(fileHandlerMock.writeToFile(anyString(), anyString())).thenReturn(true);
+
+        Book b1 = new Book("A", "AA", "111", "BOOK");
+        Book b2 = new Book("B", "BB", "222", "BOOK");
+
+        bookRepository.save(b1);
+        bookRepository.save(b2);
+
+        List<Book> result1 = bookRepository.search(null);
+        List<Book> result2 = bookRepository.search("");
+        List<Book> result3 = bookRepository.search("   ");
+
+        assertEquals(2, result1.size());
+        assertEquals(2, result2.size());
+        assertEquals(2, result3.size());
+    }
+
+   
+    @Test
+    void shouldGenerateIdWhenSavingBookWithoutId() {
+        when(fileHandlerMock.writeToFile(anyString(), anyString())).thenReturn(true);
+
+        Book book = new Book("Generated", "Author", "333", "BOOK");
+
+        assertNull(book.getId());
+
+        bookRepository.save(book);
+
+        assertNotNull(book.getId());
+        assertTrue(book.getId().startsWith("BOOK_"));
+    }
 }
