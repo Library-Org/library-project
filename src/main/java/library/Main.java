@@ -11,6 +11,7 @@ import library.config.EmailConfig;
 import io.github.cdimascio.dotenv.Dotenv;
 
 
+
 import java.util.Scanner;
 
 /**
@@ -60,6 +61,7 @@ public class Main {
             CDLoanRepository cdLoanRepository = new CDLoanRepository();
             FineRepository fineRepository = new FineRepository();
             CDFineRepository cdFineRepository = new CDFineRepository();
+            
             
             // Initialize services
             SecurityService securityService = new SecurityService();
