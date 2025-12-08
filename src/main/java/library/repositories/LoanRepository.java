@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.security.SecureRandom;
 
 /**
  * Repository for loan data management using JSON file storage
@@ -63,9 +64,13 @@ public class LoanRepository {
      * Generate unique ID for loan
      * @return generated ID
      */
+   
+
     private String generateId() {
-        return "LOAN_" + System.currentTimeMillis() + "_" + new Random().nextInt(1000);
+        SecureRandom secureRandom = new SecureRandom();
+        return "LOAN_" + System.currentTimeMillis() + "_" + secureRandom.nextInt(1000);
     }
+
 
     /**
      * Save loan to repository

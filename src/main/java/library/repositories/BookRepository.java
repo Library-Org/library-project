@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.security.SecureRandom;
 
 public class BookRepository {
     private static final String FILE_PATH = "data/books.json";
@@ -60,8 +61,9 @@ public class BookRepository {
     }
 
     private String generateId() {
-        return "BOOK_" + System.currentTimeMillis() + "_" + new Random().nextInt(1000);
+        return "BOOK_" + System.currentTimeMillis() + "_" + new SecureRandom().nextInt(1000);
     }
+
 
     public boolean save(Book book) {
         if (book.getId() == null) {
