@@ -8,7 +8,6 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.security.SecureRandom;
 
 /**
  * Repository for CD fine data management using JSON file storage
@@ -65,13 +64,9 @@ public class CDFineRepository {
      * Generate unique ID for CD fine
      * @return generated ID
      */
-   
-
     private String generateId() {
-        SecureRandom secureRandom = new SecureRandom();
-        return "CDFINE_" + System.currentTimeMillis() + "_" + secureRandom.nextInt(1000);
+        return "CDFINE_" + System.currentTimeMillis() + "_" + new Random().nextInt(1000);
     }
-
 
     /**
      * Save CD fine to repository

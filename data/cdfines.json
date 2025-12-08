@@ -1,1 +1,16 @@
-{}
+{
+  "12345": {
+    "id": "12345",
+    "userId": "user1",
+    "amount": 10.0,
+    "paidAmount": 0.0,
+    "isPaid": true
+  },
+  "12346": {
+    "id": "12346",
+    "userId": "user2",
+    "amount": 5.0,
+    "paidAmount": 0.0,
+    "isPaid": true
+  }
+}
