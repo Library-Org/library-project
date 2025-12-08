@@ -1,11 +1,10 @@
 package library.services;
 
-import library.config.EmailConfig;
-import library.models.User;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
+import library.config.EmailConfig;
+import library.models.User;
 
 class NotificationServiceTest {
 
@@ -18,12 +17,10 @@ class NotificationServiceTest {
         user = new User("1", "Kamal", "kamal@test.com", "MEMBER");
     }
 
-    // -----------------------------
-    // MOCK MODE EMAIL TEST
-    // -----------------------------
+    // ----------------------------- MOCK MODE EMAIL TEST -----------------------------
     @Test
     void testSendEmail_MockMode() {
-        notificationService.setRealMode(false);
+        notificationService.setRealMode(false); // تفعيل الوضع المحاكي
 
         boolean result = notificationService.sendEmail(
                 "test@test.com",
@@ -31,17 +28,15 @@ class NotificationServiceTest {
                 "Test Body"
         );
 
-        assertTrue(result); // mock mode always returns true
+        assertTrue(result); // الوضع المحاكي دائمًا يعيد true
     }
 
-    // -----------------------------
-    // REAL MODE WITH INVALID CONFIG
-    // -----------------------------
+    // ----------------------------- REAL MODE WITH INVALID CONFIG -----------------------------
     @Test
     void testSendEmail_RealMode_InvalidConfig() {
-        notificationService.setRealMode(true);
+        notificationService.setRealMode(true); // تفعيل الوضع الحقيقي
 
-        EmailConfig config = new EmailConfig(); // invalid config
+        EmailConfig config = new EmailConfig(); // إعدادات غير صحيحة
         notificationService.setEmailConfig(config);
 
         boolean result = notificationService.sendEmail(
@@ -50,67 +45,55 @@ class NotificationServiceTest {
                 "Test Body"
         );
 
-        assertFalse(result); // real mode + invalid config → false
+        assertFalse(result); // لا يتم الإرسال في حالة الإعدادات غير الصحيحة
     }
 
-    // -----------------------------
-    // SEND OVERDUE REMINDER
-    // -----------------------------
+    // ----------------------------- SEND OVERDUE REMINDER -----------------------------
     @Test
     void testSendOverdueReminder_UserObject() {
         boolean result = notificationService.sendOverdueReminder(
                 user, 3, 12.50
         );
-        assertTrue(result);
+        assertTrue(result); // تأكد من إرسال التذكير بنجاح
     }
 
-    // -----------------------------
-    // SEND OVERDUE REMINDER (String version)
-    // -----------------------------
+    // ----------------------------- SEND OVERDUE REMINDER (String version) -----------------------------
     @Test
     void testSendOverdueReminder_StringVersion() {
         boolean result = notificationService.sendOverdueReminder(
                 "kamal@test.com", "Kamal", 2, 5.0
         );
-        assertTrue(result);
+        assertTrue(result); // تأكد من إرسال التذكير بنجاح
     }
 
-    // -----------------------------
-    // SEND WELCOME EMAIL
-    // -----------------------------
+    // ----------------------------- SEND WELCOME EMAIL -----------------------------
     @Test
     void testSendWelcomeEmail() {
         boolean result = notificationService.sendWelcomeEmail(
                 user, "temp123"
         );
-        assertTrue(result);
+        assertTrue(result); // تأكد من إرسال البريد الإلكتروني للترحيب
     }
 
-    // -----------------------------
-    // SEND RETURN REMINDER
-    // -----------------------------
+    // ----------------------------- SEND RETURN REMINDER -----------------------------
     @Test
     void testSendReturnReminder() {
         boolean result = notificationService.sendReturnReminder(
                 user, "Clean Code", "2025-12-15"
         );
-        assertTrue(result);
+        assertTrue(result); // تأكد من إرسال تذكير العودة بنجاح
     }
 
-    // -----------------------------
-    // SEND PAYMENT CONFIRMATION
-    // -----------------------------
+    // ----------------------------- SEND PAYMENT CONFIRMATION -----------------------------
     @Test
     void testSendPaymentConfirmation() {
         boolean result = notificationService.sendPaymentConfirmation(
                 user, 20.0, 5.0
         );
-        assertTrue(result);
+        assertTrue(result); // تأكد من إرسال تأكيد الدفع بنجاح
     }
 
-    // -----------------------------
-    // GETTERS / SETTERS TEST
-    // -----------------------------
+    // ----------------------------- GETTERS / SETTERS TEST -----------------------------
     @Test
     void testGettersAndSetters() {
         notificationService.setEnabled(false);
@@ -125,9 +108,7 @@ class NotificationServiceTest {
         assertEquals("smtp.server.com", notificationService.getEmailConfig().getHost());
     }
 
-    // -----------------------------
-    // CONSTRUCTOR TEST
-    // -----------------------------
+    // ----------------------------- CONSTRUCTOR TEST -----------------------------
     @Test
     void testConstructorWithParams() {
         EmailConfig config = new EmailConfig();
@@ -138,3 +119,4 @@ class NotificationServiceTest {
         assertTrue(service.isEnabled());
     }
 }
+
