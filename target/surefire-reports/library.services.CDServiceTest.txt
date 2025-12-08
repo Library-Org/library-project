@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: library.services.CDServiceTest
--------------------------------------------------------------------------------
-Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.633 s - in library.services.CDServiceTest

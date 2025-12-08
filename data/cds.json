@@ -1,6 +1,6 @@
 {
-  "CD_1762614866345_287": {
-    "id": "CD_1762614866345_287",
+  "CD_1765195790972_657": {
+    "id": "CD_1765195790972_657",
     "title": "Greatest Hits 2024",
     "artist": "Various Artists",
     "genre": "Pop",
@@ -8,23 +8,23 @@
     "publisher": "Music Corp",
     "releaseYear": 2024,
     "isAvailable": true,
-    "createdAt": "2025-11-08T17:14:26.3444677",
-    "updatedAt": "2025-11-08T17:14:26.3454677"
+    "createdAt": "2025-12-08T14:09:50.9709147",
+    "updatedAt": "2025-12-08T14:09:50.9779646"
   },
-  "CD_1762614866348_803": {
-    "id": "CD_1762614866348_803",
+  "CD_1765195790982_313": {
+    "id": "CD_1765195790982_313",
     "title": "Jazz Classics",
     "artist": "Miles Davis",
     "genre": "Jazz",
     "trackCount": 10,
     "publisher": "Jazz Records",
     "releaseYear": 2020,
-    "isAvailable": false,
-    "createdAt": "2025-11-08T17:14:26.3444677",
-    "updatedAt": "2025-11-08T17:24:15.4698272"
+    "isAvailable": true,
+    "createdAt": "2025-12-08T14:09:50.9729245",
+    "updatedAt": "2025-12-08T14:09:50.982593"
   },
-  "CD_1762614866349_818": {
-    "id": "CD_1762614866349_818",
+  "CD_1765195790983_477": {
+    "id": "CD_1765195790983_477",
     "title": "Rock Anthems",
     "artist": "Queen",
     "genre": "Rock",
@@ -32,11 +32,11 @@
     "publisher": "Rock Music",
     "releaseYear": 2018,
     "isAvailable": true,
-    "createdAt": "2025-11-08T17:14:26.3454677",
-    "updatedAt": "2025-11-08T17:14:26.3497626"
+    "createdAt": "2025-12-08T14:09:50.9729245",
+    "updatedAt": "2025-12-08T14:09:50.9837946"
   },
-  "CD_1762614866350_985": {
-    "id": "CD_1762614866350_985",
+  "CD_1765195790983_384": {
+    "id": "CD_1765195790983_384",
     "title": "Classical Masterpieces",
     "artist": "Beethoven",
     "genre": "Classical",
@@ -44,7 +44,7 @@
     "publisher": "Classical Records",
     "releaseYear": 2019,
     "isAvailable": true,
-    "createdAt": "2025-11-08T17:14:26.3454677",
-    "updatedAt": "2025-11-08T17:14:26.3507612"
+    "createdAt": "2025-12-08T14:09:50.9729245",
+    "updatedAt": "2025-12-08T14:09:50.9837946"
   }
 }
