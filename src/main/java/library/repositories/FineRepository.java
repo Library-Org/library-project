@@ -20,7 +20,8 @@ public class FineRepository {
     private Map<String, Fine> fines;
     private Gson gson;
     private JsonFileHandler fileHandler;
-    private static final Random RANDOM = new Random();
+    private static final java.security.SecureRandom RANDOM = new java.security.SecureRandom();
+
 
 
     public FineRepository() {

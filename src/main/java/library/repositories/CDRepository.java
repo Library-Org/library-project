@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class CDRepository {
 
     private static final String FILE_PATH = "data/cds.json";
-    private static final Random RANDOM = new Random();
+    private static final java.security.SecureRandom RANDOM = new java.security.SecureRandom();
 
     private Map<String, CD> cds;
     private Gson gson;
