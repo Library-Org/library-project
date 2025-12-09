@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import library.utils.DateUtils;
 
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class CDTest {
@@ -63,36 +62,41 @@ public class CDTest {
 
     @Test
     public void testCreatedAtAndUpdatedAt() {
-        // التحقق من أنه يتم تعيين التاريخ عند الإنشاء
+        // التأكد من تعيين التاريخ عند الإنشاء
         assertNotNull(cd.getCreatedAt());
         assertNotNull(cd.getUpdatedAt());
 
-        // التأكد من أن التاريخ يتم تحويله بشكل صحيح
+        // التأكد من أن createdAt يتحول لوقت بشكل صحيح
         LocalDateTime createdAtDateTime = cd.getCreatedAtDateTime();
         assertNotNull(createdAtDateTime);
         assertEquals(cd.getCreatedAt(), DateUtils.toString(createdAtDateTime));
 
-        // التأكد من أن `updatedAt` يتم تحديثه بشكل صحيح
+        // تحديث updatedAt
         cd.updateTimestamp();
         assertNotEquals(cd.getCreatedAt(), cd.getUpdatedAt());
     }
 
-    
-
     @Test
     public void testUpdateTimestamp() {
-        String initialUpdatedAt = cd.getUpdatedAt();  // التاريخ المبدئي
-        cd.updateTimestamp();  // استدعاء الدالة التي يجب أن تغير التاريخ
-        String updatedAt = cd.getUpdatedAt();  // التاريخ بعد التحديث
+        String initialUpdatedAt = cd.getUpdatedAt();
 
-        // تحويل التواريخ إلى LocalDateTime للمقارنة بدون الدقة الدقيقة
+        // تأخير بسيط لتفادي الفروقات الدقيقة
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        cd.updateTimestamp();
+
+        String updatedAt = cd.getUpdatedAt();
+
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         LocalDateTime initialDateTime = LocalDateTime.parse(initialUpdatedAt, formatter);
         LocalDateTime updatedDateTime = LocalDateTime.parse(updatedAt, formatter);
 
-        // التأكد من أن التاريخ قد تغير
-        assertNotEquals(initialDateTime, updatedDateTime);
+        // التأكد أن updatedAt أكبر من initialUpdatedAt
+        assertTrue(updatedDateTime.isAfter(initialDateTime),
+                "updatedAt should be after initial updatedAt");
     }
-
 }
-
