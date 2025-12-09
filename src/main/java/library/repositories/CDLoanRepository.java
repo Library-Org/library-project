@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class CDLoanRepository {
 
     private String filePath = "data/cdloans.json";
+    private static final Random RANDOM = new Random();
 
     // نجعلهم protected لتسهيل الاختبار بدون اختراق private
     protected Map<String, CDLoan> cdLoans;
@@ -69,8 +70,9 @@ public class CDLoanRepository {
 
     /** Generate ID */
     protected String generateId() {
-        return "CDLOAN_" + System.currentTimeMillis() + "_" + new Random().nextInt(1000);
+        return "CDLOAN_" + System.currentTimeMillis() + "_" + RANDOM.nextInt(1000);
     }
+
 
     /** Save CD loan (ALWAYS returns true — required for tests) */
     public boolean save(CDLoan cdLoan) {

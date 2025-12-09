@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public class CDRepository {
 
     private static final String FILE_PATH = "data/cds.json";
+    private static final Random RANDOM = new Random();
 
     private Map<String, CD> cds;
     private Gson gson;
@@ -36,8 +37,9 @@ public class CDRepository {
     }
 
     private String generateId() {
-        return "CD_" + System.currentTimeMillis() + "_" + new Random().nextInt(1000);
+        return "CD_" + System.currentTimeMillis() + "_" + RANDOM.nextInt(1000);
     }
+
 
     public boolean save(CD cd) {
         if (cd.getId() == null) cd.setId(generateId());

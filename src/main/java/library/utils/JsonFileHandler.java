@@ -51,10 +51,17 @@ public class JsonFileHandler {
     private void createFileIfNotExists(String filePath) throws IOException {
         File file = new File(filePath);
         if (!file.exists()) {
+
             file.getParentFile().mkdirs();
-            file.createNewFile();
+
+            boolean created = file.createNewFile();
+            if (!created) {
+                System.err.println("Warning: Failed to create new file: " + filePath);
+            }
+
             // Initialize with empty JSON object
             Files.write(Paths.get(filePath), "{}".getBytes());
         }
     }
+
 }

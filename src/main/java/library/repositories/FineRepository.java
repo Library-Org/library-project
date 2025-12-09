@@ -20,6 +20,8 @@ public class FineRepository {
     private Map<String, Fine> fines;
     private Gson gson;
     private JsonFileHandler fileHandler;
+    private static final Random RANDOM = new Random();
+
 
     public FineRepository() {
         this.gson = new Gson();
@@ -64,7 +66,7 @@ public class FineRepository {
      * @return generated ID
      */
     private String generateId() {
-        return "FINE_" + System.currentTimeMillis() + "_" + new Random().nextInt(1000);
+        return "FINE_" + System.currentTimeMillis() + "_" + RANDOM.nextInt(1000);
     }
 
     /**
