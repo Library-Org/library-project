@@ -19,9 +19,6 @@ public class CDLoan {
 
     public CDLoan() {}
 
-    /**
-     * Normal constructor: due date = 7 days
-     */
     public CDLoan(String userId, String cdId) {
         this.userId = userId;
         this.cdId = cdId;
@@ -31,21 +28,14 @@ public class CDLoan {
         this.fineAmount = 0.0;
     }
 
-    /**
-     * Constructor required for the test:
-     * *IMPORTANT*: dueDate must equal borrowDate — NO +7 days
-     */
+    // TEST-ONLY constructor
     public CDLoan(String id, String userId, String cdId, String borrowDateString) {
         this.id = id;
         this.userId = userId;
         this.cdId = cdId;
         this.borrowDate = borrowDateString;
 
-        LocalDateTime dt = DateUtils.fromString(borrowDateString);
-        if (dt != null) {
-            this.dueDate = borrowDateString; // TEST EXPECTATION — NO ADDITION
-        }
-
+        this.dueDate = borrowDateString; // test requirement
         this.isReturned = false;
         this.fineAmount = 0.0;
     }
@@ -76,9 +66,7 @@ public class CDLoan {
     public void setDueDate(String dueDate) { this.dueDate = dueDate; }
 
     public void setDueDate(LocalDate date) {
-        if (date != null) {
-            this.dueDate = date.toString();
-        }
+        if (date != null) this.dueDate = date.toString();
     }
 
     public LocalDateTime getDueDateTime() {
@@ -86,7 +74,8 @@ public class CDLoan {
     }
 
     public void setDueDateTime(LocalDateTime dueDate) {
-        this.dueDate = DateUtils.toString(dueDate);
+        if (dueDate != null)
+            this.dueDate = DateUtils.toString(dueDate);
     }
 
     public String getReturnDate() { return returnDate; }
@@ -97,7 +86,8 @@ public class CDLoan {
     }
 
     public void setReturnDateTime(LocalDateTime returnDate) {
-        this.returnDate = DateUtils.toString(returnDate);
+        if (returnDate != null)
+            this.returnDate = DateUtils.toString(returnDate);
     }
 
     public boolean isReturned() { return isReturned; }
@@ -108,27 +98,17 @@ public class CDLoan {
 
     // ---------------------- Logic ----------------------
 
-    /**
-     * Mark loan as returned now
-     */
     public void returnCD() {
         this.isReturned = true;
         this.returnDate = DateUtils.toString(LocalDateTime.now());
     }
 
-    /**
-     * Extend loan by given number of days
-     */
     public void extendLoan(int days) {
         LocalDateTime due = getDueDateTime();
-        if (due != null) {
+        if (due != null)
             this.dueDate = DateUtils.toString(due.plusDays(days));
-        }
     }
 
-    /**
-     * Check if CD loan is overdue (date-only comparison)
-     */
     public boolean isOverdue() {
         LocalDateTime due = getDueDateTime();
         if (due == null) return false;
@@ -142,9 +122,6 @@ public class CDLoan {
         return LocalDateTime.now().toLocalDate().isAfter(due.toLocalDate());
     }
 
-    /**
-     * Calculate overdue days (date-only)
-     */
     public int getOverdueDays() {
         if (!isOverdue()) return 0;
 
@@ -154,17 +131,15 @@ public class CDLoan {
         LocalDateTime comparisonPoint =
                 isReturned ? getReturnDateTime() : LocalDateTime.now();
 
-        if (comparisonPoint == null) return 0;
-
-        long days = java.time.Duration
-                .between(
-                        due.toLocalDate().atStartOfDay(),
-                        comparisonPoint.toLocalDate().atStartOfDay()
-                ).toDays();
+        long days = java.time.Duration.between(
+                due.toLocalDate().atStartOfDay(),
+                comparisonPoint.toLocalDate().atStartOfDay()
+        ).toDays();
 
         return (int) Math.max(days, 1);
     }
 }
+
 
 
 /*
