@@ -1,121 +1,217 @@
 package library.repositories;
 
+import com.google.gson.Gson;
 import library.models.CDLoan;
+import library.utils.GsonUtils;
+import library.utils.JsonFileHandler;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class CDLoanRepositoryTest {
 
+    private JsonFileHandler fileHandler;
+    private Gson gson;
     private CDLoanRepository repo;
 
     @BeforeEach
     void setup() {
-      
-        File file = new File("data/cdloans.json");
-        if (file.exists()) {
-            file.delete();
-        }
-        repo = new CDLoanRepository();
+        fileHandler = mock(JsonFileHandler.class);
+        gson = GsonUtils.createGson();
+
+        when(fileHandler.readFromFile(anyString())).thenReturn(null);
+
+        repo = new CDLoanRepository(fileHandler, gson, "data/cdloans.json");
     }
 
+    // ----------------------------------------------
+    // loadCDLoans tests
+    // ----------------------------------------------
+    @Test
+    void testLoadCDLoans_NullJson() {
+        when(fileHandler.readFromFile(anyString())).thenReturn(null);
+
+        CDLoanRepository r = new CDLoanRepository(fileHandler, gson, "x.json");
+
+        assertEquals(0, r.findAll().size());
+    }
+
+    @Test
+    void testLoadCDLoans_EmptyJson() {
+        when(fileHandler.readFromFile(anyString())).thenReturn("  ");
+
+        CDLoanRepository r = new CDLoanRepository(fileHandler, gson, "x.json");
+
+        assertEquals(0, r.findAll().size());
+    }
+
+    @Test
+    void testLoadCDLoans_InvalidJson() {
+        when(fileHandler.readFromFile(anyString())).thenReturn("{ invalid");
+
+        CDLoanRepository r = new CDLoanRepository(fileHandler, gson, "x.json");
+
+        assertEquals(0, r.findAll().size());
+    }
+
+    @Test
+    void testLoadCDLoans_ValidJson() {
+        String json = "{ \"L1\": { \"id\":\"L1\", \"userId\":\"U1\", \"cdId\":\"CD1\" } }";
+
+        when(fileHandler.readFromFile(anyString())).thenReturn(json);
+
+        CDLoanRepository r = new CDLoanRepository(fileHandler, gson, "x.json");
+
+        assertEquals(1, r.findAll().size());
+        assertEquals("U1", r.findById("L1").getUserId());
+    }
+
+    // ----------------------------------------------
+    // saveCDLoans tests
+    // ----------------------------------------------
+    @Test
+    void testSave_Success() {
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
+
+        CDLoan loan = new CDLoan("U1", "C1");
+
+        assertTrue(repo.save(loan));
+    }
+
+    @Test
+    void testSave_Failure() {
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(false);
+
+        CDLoan loan = new CDLoan("U1", "C1");
+
+        assertFalse(repo.save(loan));
+    }
+
+    // ----------------------------------------------
+    // ID Generation
+    // ----------------------------------------------
+    @Test
+    void testGenerateId_AutoAssigned() {
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
+
+        CDLoan loan = new CDLoan("A", "B");
+        repo.save(loan);
+
+        assertNotNull(loan.getId());
+        assertTrue(loan.getId().startsWith("CDLOAN_"));
+    }
+
+    // ----------------------------------------------
+    // Find by ID
+    // ----------------------------------------------
     @Test
     void testSaveAndFindById() {
-        CDLoan loan = new CDLoan("USER1", "CD1");
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
 
-        boolean saved = repo.save(loan);
-
-        assertTrue(saved);
-        assertNotNull(loan.getId());
-
-        CDLoan found = repo.findById(loan.getId());
-        assertNotNull(found);
-        assertEquals("USER1", found.getUserId());
-        assertEquals("CD1", found.getCdId());
-    }
-
-    @Test
-    void testFindByUserId() {
-        CDLoan loan1 = new CDLoan("U1", "CD1");
-        CDLoan loan2 = new CDLoan("U1", "CD2");
-        CDLoan loan3 = new CDLoan("U2", "CD3");
-
-        repo.save(loan1);
-        repo.save(loan2);
-        repo.save(loan3);
-
-        List<CDLoan> list = repo.findByUserId("U1");
-        assertEquals(2, list.size());
-    }
-
-    @Test
-    void testFindByCDId() {
-        CDLoan loan1 = new CDLoan("U1", "CDA");
-        CDLoan loan2 = new CDLoan("U2", "CDA");
-
-        repo.save(loan1);
-        repo.save(loan2);
-
-        List<CDLoan> list = repo.findByCDId("CDA");
-
-        assertEquals(2, list.size());
-    }
-
-    @Test
-    void testUpdateExistingLoan() {
         CDLoan loan = new CDLoan("U1", "CD1");
         repo.save(loan);
 
-        loan.setReturned(true);
-        loan.setReturnDateTime(LocalDateTime.now());
-
-        boolean updated = repo.update(loan);
-
-        assertTrue(updated);
-
-        CDLoan found = repo.findById(loan.getId());
-        assertTrue(found.isReturned());
-        assertNotNull(found.getReturnDate());
+        assertNotNull(repo.findById(loan.getId()));
     }
 
     @Test
-    void testUpdateNonExistingLoan() {
-        CDLoan loan = new CDLoan("U1", "CD1");
-        loan.setId("UNKNOWN");
+    void testFindById_NotFound() {
+        assertNull(repo.findById("XXX"));
+    }
 
-        boolean updated = repo.update(loan);
+    // ----------------------------------------------
+    // Find by userId
+    // ----------------------------------------------
+    @Test
+    void testFindByUserId() {
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
 
-        assertFalse(updated);
+        repo.save(new CDLoan("U1", "C1"));
+        repo.save(new CDLoan("U1", "C2"));
+        repo.save(new CDLoan("U2", "C3"));
+
+        assertEquals(2, repo.findByUserId("U1").size());
     }
 
     @Test
-    void testFindAll() {
-        repo.save(new CDLoan("A", "X"));
-        repo.save(new CDLoan("B", "Y"));
-        repo.save(new CDLoan("C", "Z"));
-
-        List<CDLoan> all = repo.findAll();
-
-        assertEquals(3, all.size());
+    void testFindByUserId_Empty() {
+        assertEquals(0, repo.findByUserId("NONE").size());
     }
 
+    // ----------------------------------------------
+    // Find by CD ID
+    // ----------------------------------------------
+    @Test
+    void testFindByCDId() {
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
+
+        repo.save(new CDLoan("U1", "CD1"));
+        repo.save(new CDLoan("U2", "CD1"));
+        repo.save(new CDLoan("U3", "CD2"));
+
+        assertEquals(2, repo.findByCDId("CD1").size());
+    }
+
+    // ----------------------------------------------
+    // Overdue loans
+    // ----------------------------------------------
     @Test
     void testFindOverdueCDLoans() {
-        CDLoan overdue = new CDLoan("U1", "CD1");
-        overdue.setDueDateTime(LocalDateTime.now().minusDays(5)); // متأخر
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
+
+        CDLoan overdue = new CDLoan("U1", "C1");
+        overdue.setDueDateTime(LocalDateTime.now().minusDays(3));
         repo.save(overdue);
 
-        CDLoan notOverdue = new CDLoan("U2", "CD2");
-        repo.save(notOverdue);
+        CDLoan ok = new CDLoan("U2", "C2");
+        repo.save(ok);
 
         List<CDLoan> list = repo.findOverdueCDLoans();
 
         assertEquals(1, list.size());
         assertEquals("U1", list.get(0).getUserId());
+    }
+
+    // ----------------------------------------------
+    // Update
+    // ----------------------------------------------
+    @Test
+    void testUpdate_Success() {
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
+
+        CDLoan loan = new CDLoan("U1", "C1");
+        repo.save(loan);
+
+        loan.setReturned(true);
+
+        assertTrue(repo.update(loan));
+        assertTrue(repo.findById(loan.getId()).isReturned());
+    }
+
+    @Test
+    void testUpdate_Failure() {
+        CDLoan fake = new CDLoan("U1", "C1");
+        fake.setId("NOT_EXIST");
+
+        assertFalse(repo.update(fake));
+    }
+
+    // ----------------------------------------------
+    // FindAll
+    // ----------------------------------------------
+    @Test
+    void testFindAll() {
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
+
+        repo.save(new CDLoan("A", "1"));
+        repo.save(new CDLoan("B", "2"));
+
+        assertEquals(2, repo.findAll().size());
     }
 }

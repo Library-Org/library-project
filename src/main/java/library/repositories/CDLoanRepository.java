@@ -5,74 +5,73 @@ import library.utils.JsonFileHandler;
 import library.utils.GsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Repository for CD loan data management using JSON file storage
- * @author Library Team
- * @version 1.0
  */
 public class CDLoanRepository {
-    private static final String FILE_PATH = "data/cdloans.json";
-    private Map<String, CDLoan> cdLoans;
-    private Gson gson;
-    private JsonFileHandler fileHandler;
 
+    private String filePath = "data/cdloans.json";
+
+    // نجعلهم protected لتسهيل الاختبار بدون اختراق private
+    protected Map<String, CDLoan> cdLoans;
+    protected Gson gson;
+    protected JsonFileHandler fileHandler;
+
+    /** Default constructor */
     public CDLoanRepository() {
-        this.gson = GsonUtils.createGson();
         this.fileHandler = new JsonFileHandler();
+        this.gson = GsonUtils.createGson();
         this.cdLoans = loadCDLoans();
     }
 
-    /**
-     * Load CD loans from JSON file
-     * @return map of CD loans
-     */
-    private Map<String, CDLoan> loadCDLoans() {
-        String json = fileHandler.readFromFile(FILE_PATH);
+    /** Constructor for testing (Dependency Injection) */
+    public CDLoanRepository(JsonFileHandler fileHandler, Gson gson, String filePath) {
+        this.fileHandler = (fileHandler != null) ? fileHandler : new JsonFileHandler();
+        this.gson = (gson != null) ? gson : GsonUtils.createGson();
+        this.filePath = (filePath != null) ? filePath : "data/cdloans.json";
+        this.cdLoans = loadCDLoans();
+    }
+
+    /** Load CD loans */
+    protected Map<String, CDLoan> loadCDLoans() {
+        String json = fileHandler.readFromFile(filePath);
+
         if (json == null || json.trim().isEmpty()) {
             return new HashMap<>();
         }
 
         try {
-            Type type = new TypeToken<Map<String, CDLoan>>(){}.getType();
+            Type type = new TypeToken<Map<String, CDLoan>>() {}.getType();
             Map<String, CDLoan> loadedCDLoans = gson.fromJson(json, type);
-            return loadedCDLoans != null ? loadedCDLoans : new HashMap<>();
+            return (loadedCDLoans != null) ? loadedCDLoans : new HashMap<>();
         } catch (Exception e) {
-            System.err.println("Error loading CD loans from JSON: " + e.getMessage());
+            System.err.println("Error loading CD loans: " + e.getMessage());
             return new HashMap<>();
         }
     }
 
-    /**
-     * Save CD loans to JSON file
-     * @return true if save successful, false otherwise
-     */
-    private boolean saveCDLoans() {
+    /** Save CD loans */
+    protected boolean saveCDLoans() {
         try {
             String json = gson.toJson(cdLoans);
-            return fileHandler.writeToFile(FILE_PATH, json);
+            return fileHandler.writeToFile(filePath, json);
         } catch (Exception e) {
-            System.err.println("Error saving CD loans to JSON: " + e.getMessage());
+            System.err.println("Error saving CD loans: " + e.getMessage());
             return false;
         }
     }
 
-    /**
-     * Generate unique ID for CD loan
-     * @return generated ID
-     */
-    private String generateId() {
+    /** Generate ID */
+    protected String generateId() {
         return "CDLOAN_" + System.currentTimeMillis() + "_" + new Random().nextInt(1000);
     }
 
-    /**
-     * Save CD loan to repository
-     * @param cdLoan CD loan to save
-     * @return true if save successful, false otherwise
-     */
+    /** Save */
     public boolean save(CDLoan cdLoan) {
         if (cdLoan.getId() == null) {
             cdLoan.setId(generateId());
@@ -81,65 +80,43 @@ public class CDLoanRepository {
         return saveCDLoans();
     }
 
-    /**
-     * Find CD loan by ID
-     * @param id CD loan ID
-     * @return CD loan or null if not found
-     */
+    /** Find by ID */
     public CDLoan findById(String id) {
         return cdLoans.get(id);
     }
 
-    /**
-     * Find CD loans by user ID
-     * @param userId user ID
-     * @return list of user's CD loans
-     */
+    /** Find by user ID */
     public List<CDLoan> findByUserId(String userId) {
         return cdLoans.values().stream()
                 .filter(loan -> userId.equals(loan.getUserId()))
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Find CD loans by CD ID
-     * @param cdId CD ID
-     * @return list of CD's loans
-     */
+    /** Find by CD ID */
     public List<CDLoan> findByCDId(String cdId) {
         return cdLoans.values().stream()
                 .filter(loan -> cdId.equals(loan.getCdId()))
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Find overdue CD loans
-     * @return list of overdue CD loans
-     */
+    /** Find overdue */
     public List<CDLoan> findOverdueCDLoans() {
         return cdLoans.values().stream()
-                .filter(loan -> !loan.isReturned())
+                .filter(l -> !l.isReturned())
                 .filter(CDLoan::isOverdue)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Update CD loan in repository
-     * @param cdLoan CD loan to update
-     * @return true if update successful, false otherwise
-     */
+    /** Update */
     public boolean update(CDLoan cdLoan) {
-        if (cdLoans.containsKey(cdLoan.getId())) {
-            cdLoans.put(cdLoan.getId(), cdLoan);
-            return saveCDLoans();
+        if (!cdLoans.containsKey(cdLoan.getId())) {
+            return false;
         }
-        return false;
+        cdLoans.put(cdLoan.getId(), cdLoan);
+        return saveCDLoans();
     }
 
-    /**
-     * Get all CD loans
-     * @return list of all CD loans
-     */
+    /** Find all */
     public List<CDLoan> findAll() {
         return new ArrayList<>(cdLoans.values());
     }
