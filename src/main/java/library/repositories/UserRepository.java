@@ -8,7 +8,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Repository for user data management using JSON file storage
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class UserRepository {
 
-    public static final String FILE_PATH = "data/users.json";
+    private static final String FILE_PATH = "data/users.json";
 
     private Map<String, User> users;
     private Gson gson;
@@ -29,32 +28,41 @@ public class UserRepository {
     public UserRepository() {
         this.gson = GsonUtils.createGson();
         this.fileHandler = new JsonFileHandler();
-        this.users = loadUsers();
+        this.users = loadUsers(FILE_PATH);
     }
 
     /**
-     * Constructor for testing (dependency injection)
+     * Constructor for injecting mocks (tests)
      */
     public UserRepository(JsonFileHandler fileHandler, Gson gson) {
-        this.gson = (gson != null ? gson : GsonUtils.createGson());
-        this.fileHandler = (fileHandler != null ? fileHandler : new JsonFileHandler());
-        this.users = loadUsers();
+        this.gson = gson;
+        this.fileHandler = fileHandler;
+        this.users = loadUsers(FILE_PATH);
+    }
+
+    /**
+     * Constructor for tests with custom file path
+     */
+    public UserRepository(String filePath, JsonFileHandler fileHandler, Gson gson) {
+        this.gson = gson;
+        this.fileHandler = fileHandler;
+        this.users = loadUsers(filePath);
     }
 
     /**
      * Load users from JSON file
-     * @return map of users
      */
-    private Map<String, User> loadUsers() {
-        String json = fileHandler.readFromFile(FILE_PATH);
+    private Map<String, User> loadUsers(String path) {
+        String json = fileHandler.readFromFile(path);
 
-        if (json == null || json.trim().isEmpty() || json.trim().equals("{}"))
+        if (json == null || json.trim().isEmpty()) {
             return new HashMap<>();
+        }
 
         try {
             Type type = new TypeToken<Map<String, User>>() {}.getType();
-            Map<String, User> loadedUsers = gson.fromJson(json, type);
-            return (loadedUsers != null ? loadedUsers : new HashMap<>());
+            Map<String, User> loaded = gson.fromJson(json, type);
+            return loaded != null ? loaded : new HashMap<>();
         } catch (Exception e) {
             System.err.println("Error loading users from JSON: " + e.getMessage());
             return new HashMap<>();
@@ -62,15 +70,13 @@ public class UserRepository {
     }
 
     /**
-     * Save users to JSON file
-     * @return true if success
+     * Save users back to JSON file
      */
     private boolean saveUsers() {
         try {
             String json = gson.toJson(users);
             return fileHandler.writeToFile(FILE_PATH, json);
         } catch (Exception e) {
-            System.err.println("Error saving users: " + e.getMessage());
             return false;
         }
     }
@@ -82,9 +88,7 @@ public class UserRepository {
         return "USER_" + System.currentTimeMillis() + "_" + new Random().nextInt(1000);
     }
 
-    /**
-     * Save user
-     */
+    /** Save user */
     public boolean save(User user) {
         if (user.getId() == null) {
             user.setId(generateId());
@@ -94,35 +98,31 @@ public class UserRepository {
         return saveUsers();
     }
 
-    /**
-     * Find by email
-     */
+    /** Find by email */
     public User findByEmail(String email) {
-        return users.values().stream()
+        return users.values()
+                .stream()
                 .filter(u -> email.equals(u.getEmail()))
                 .findFirst()
                 .orElse(null);
     }
 
-    /**
-     * Find by ID
-     */
+    /** Find by ID */
     public User findById(String id) {
         return users.get(id);
     }
 
-    /**
-     * Get all users
-     */
+    /** Find all */
     public List<User> findAll() {
         return new ArrayList<>(users.values());
     }
 
-    /**
-     * Delete user
-     */
+    /** Delete user */
     public boolean delete(String id) {
         User removed = users.remove(id);
-        return (removed != null) && saveUsers();
+        if (removed != null) {
+            return saveUsers();
+        }
+        return false;
     }
 }
