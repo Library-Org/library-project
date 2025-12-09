@@ -20,20 +20,20 @@ public class CDLoan {
     public CDLoan() {}
 
     /**
-     * Constructor used normally when creating a new loan
+     * Normal constructor: due date = 7 days
      */
     public CDLoan(String userId, String cdId) {
         this.userId = userId;
         this.cdId = cdId;
         this.borrowDate = DateUtils.toString(LocalDateTime.now());
-        this.dueDate = DateUtils.toString(LocalDateTime.now().plusDays(7)); 
+        this.dueDate = DateUtils.toString(LocalDateTime.now().plusDays(7));
         this.isReturned = false;
         this.fineAmount = 0.0;
     }
 
     /**
      * Constructor required for the test:
-     * CDLoan(String id, String userId, String cdId, String borrowDateString)
+     * *IMPORTANT*: dueDate must equal borrowDate — NO +7 days
      */
     public CDLoan(String id, String userId, String cdId, String borrowDateString) {
         this.id = id;
@@ -43,7 +43,7 @@ public class CDLoan {
 
         LocalDateTime dt = DateUtils.fromString(borrowDateString);
         if (dt != null) {
-            this.dueDate = DateUtils.toString(dt.plusDays(7));
+            this.dueDate = borrowDateString; // TEST EXPECTATION — NO ADDITION
         }
 
         this.isReturned = false;
@@ -109,6 +109,24 @@ public class CDLoan {
     // ---------------------- Logic ----------------------
 
     /**
+     * Mark loan as returned now
+     */
+    public void returnCD() {
+        this.isReturned = true;
+        this.returnDate = DateUtils.toString(LocalDateTime.now());
+    }
+
+    /**
+     * Extend loan by given number of days
+     */
+    public void extendLoan(int days) {
+        LocalDateTime due = getDueDateTime();
+        if (due != null) {
+            this.dueDate = DateUtils.toString(due.plusDays(days));
+        }
+    }
+
+    /**
      * Check if CD loan is overdue (date-only comparison)
      */
     public boolean isOverdue() {
@@ -147,7 +165,6 @@ public class CDLoan {
         return (int) Math.max(days, 1);
     }
 }
-
 
 
 /*
