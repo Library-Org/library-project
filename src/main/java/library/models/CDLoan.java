@@ -4,7 +4,6 @@ import library.utils.DateUtils;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 
-
 /**
  * CD Loan model representing a CD borrowing transaction
  */
@@ -20,16 +19,39 @@ public class CDLoan {
 
     public CDLoan() {}
 
+    /**
+     * Constructor used normally when creating a new loan
+     */
     public CDLoan(String userId, String cdId) {
         this.userId = userId;
         this.cdId = cdId;
         this.borrowDate = DateUtils.toString(LocalDateTime.now());
-        this.dueDate = DateUtils.toString(LocalDateTime.now().plusDays(7)); // CDs: 7 days
+        this.dueDate = DateUtils.toString(LocalDateTime.now().plusDays(7)); 
         this.isReturned = false;
         this.fineAmount = 0.0;
     }
 
-    // Getters and Setters
+    /**
+     * Constructor required for the test:
+     * CDLoan(String id, String userId, String cdId, String borrowDateString)
+     */
+    public CDLoan(String id, String userId, String cdId, String borrowDateString) {
+        this.id = id;
+        this.userId = userId;
+        this.cdId = cdId;
+        this.borrowDate = borrowDateString;
+
+        LocalDateTime dt = DateUtils.fromString(borrowDateString);
+        if (dt != null) {
+            this.dueDate = DateUtils.toString(dt.plusDays(7));
+        }
+
+        this.isReturned = false;
+        this.fineAmount = 0.0;
+    }
+
+    // ------------------ Getters & Setters ------------------
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -52,13 +74,12 @@ public class CDLoan {
 
     public String getDueDate() { return dueDate; }
     public void setDueDate(String dueDate) { this.dueDate = dueDate; }
-    
+
     public void setDueDate(LocalDate date) {
         if (date != null) {
             this.dueDate = date.toString();
         }
     }
-
 
     public LocalDateTime getDueDateTime() {
         return DateUtils.fromString(dueDate);
@@ -85,27 +106,26 @@ public class CDLoan {
     public double getFineAmount() { return fineAmount; }
     public void setFineAmount(double fineAmount) { this.fineAmount = fineAmount; }
 
+    // ---------------------- Logic ----------------------
+
     /**
-     * Check if CD loan is overdue
-     * Compare ONLY by date, not time of day
+     * Check if CD loan is overdue (date-only comparison)
      */
     public boolean isOverdue() {
         LocalDateTime due = getDueDateTime();
         if (due == null) return false;
 
-        // Compare DATE ONLY
         if (isReturned) {
             LocalDateTime returned = getReturnDateTime();
             if (returned == null) return false;
             return returned.toLocalDate().isAfter(due.toLocalDate());
         }
 
-        // Not returned → compare today's date
         return LocalDateTime.now().toLocalDate().isAfter(due.toLocalDate());
     }
 
     /**
-     * Calculate overdue days ONLY based on date comparison
+     * Calculate overdue days (date-only)
      */
     public int getOverdueDays() {
         if (!isOverdue()) return 0;
@@ -113,7 +133,6 @@ public class CDLoan {
         LocalDateTime due = getDueDateTime();
         if (due == null) return 0;
 
-        // Use DATE ONLY
         LocalDateTime comparisonPoint =
                 isReturned ? getReturnDateTime() : LocalDateTime.now();
 
@@ -125,7 +144,7 @@ public class CDLoan {
                         comparisonPoint.toLocalDate().atStartOfDay()
                 ).toDays();
 
-        return (int) Math.max(days, 1); // Minimum 1 day overdue
+        return (int) Math.max(days, 1);
     }
 }
 
