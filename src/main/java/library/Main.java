@@ -1,3 +1,4 @@
+/*
 package library;
 
 
@@ -19,6 +20,7 @@ import java.util.Scanner;
  * @author Library Team
  * @version 1.0
  */
+/*
 public class Main {
     private AuthController authController;
     private BookController bookController;
@@ -51,6 +53,7 @@ public class Main {
     /**
      * Initialize application dependencies
      */
+/*
     private void initializeDependencies() {
         try {
             // Initialize repositories
@@ -98,7 +101,7 @@ public class Main {
     /**
      * Create default admin user if not exists
      */
-    
+    /*
     private void createDefaultAdmin() {
         try {
             UserRepository userRepo = new UserRepository();
@@ -143,6 +146,7 @@ public class Main {
     /**
      * Initialize test data for books and CDs
      */
+/*
     private void initializeTestData() {
         try {
             BookRepository bookRepo = new BookRepository();
@@ -183,6 +187,7 @@ public class Main {
     /**
      * Start the application
      */
+/*
     public void start() {
         System.out.println("🚀 === Library Management System ===");
         System.out.println("📚 Welcome to the Library Management System!");
@@ -211,6 +216,7 @@ public class Main {
     /**
      * Show login/registration menu
      */
+/*
     private void showLoginMenu() {
         System.out.println("\n🏠 === Main Menu ===");
         System.out.println("1. 🔐 Login");
@@ -237,6 +243,7 @@ public class Main {
     /**
      * Show admin menu
      */
+/*
     private void showAdminMenu() {
         System.out.println("\n👨‍💼 === Admin Menu ===");
         System.out.println("1. 📖 Manage Books");
@@ -279,6 +286,7 @@ public class Main {
     /**
      * Show user menu
      */
+/*
     private void showUserMenu() {
         System.out.println("\n👤 === User Menu ===");
         System.out.println("1. 📚 Browse Books");
@@ -317,6 +325,7 @@ public class Main {
     /**
      * Handle book management (admin)
      */
+/*
     private void handleBookManagement() {
         System.out.println("\n📖 === Book Management ===");
         System.out.println("1. ➕ Add Book");
@@ -346,6 +355,7 @@ public class Main {
     /**
      * Handle CD management (admin)
      */
+/*
     private void handleCDManagement() {
         System.out.println("\n💿 === CD Management ===");
         System.out.println("1. ➕ Add CD");
@@ -383,6 +393,7 @@ public class Main {
     /**
      * Handle adding a new book
      */
+/*
     private void handleAddBook() {
         System.out.println("\n📖 === Add New Book ===");
         System.out.print("📗 Title: ");
@@ -399,12 +410,13 @@ public class Main {
             return;
         }
 
-        bookController.addBook(title, author, isbn, "BOOK");
+      /*  bookController.addBook(title, author, isbn, "BOOK");
     }
 
     /**
      * Handle adding a new CD
      */
+/*
     private void handleAddCD() {
         System.out.println("\n💿 === Add New CD ===");
         System.out.print("📀 Title: ");
@@ -441,6 +453,7 @@ public class Main {
     /**
      * Handle book browsing (user)
      */
+/*
     private void handleBookBrowsing() {
         System.out.println("\n📚 === Book Browsing ===");
         System.out.println("1. 🔍 Search Books");
@@ -470,6 +483,7 @@ public class Main {
     /**
      * Handle CD browsing (user)
      */
+/*
     private void handleCDBrowsing() {
         System.out.println("\n💿 === CD Browsing ===");
         System.out.println("1. 🔍 Search CDs");
@@ -507,6 +521,7 @@ public class Main {
     /**
      * Handle book search
      */
+/*
     private void handleSearchBooks() {
         System.out.println("\n🔍 === Search Books ===");
         System.out.print("🔎 Enter search query (title, author, or ISBN): ");
@@ -517,6 +532,7 @@ public class Main {
     /**
      * Handle CD search
      */
+/*
     private void handleSearchCDs() {
         System.out.println("\n🔍 === Search CDs ===");
         System.out.print("🔎 Enter search query (title, artist, or genre): ");
@@ -527,6 +543,7 @@ public class Main {
     /**
      * Handle viewing all books
      */
+/*
     private void handleViewAllBooks() {
         System.out.println("\n📚 === All Books ===");
         bookController.viewAllBooks();
@@ -535,6 +552,7 @@ public class Main {
     /**
      * Handle viewing all CDs
      */
+/*
     private void handleViewAllCDs() {
         System.out.println("\n💿 === All CDs ===");
         cdController.viewAllCDs();
@@ -543,6 +561,7 @@ public class Main {
     /**
      * Handle viewing CDs by artist
      */
+/*
     private void handleViewCDsByArtist() {
         System.out.println("\n🎵 === CDs by Artist ===");
         System.out.print("Enter artist name: ");
@@ -553,6 +572,7 @@ public class Main {
     /**
      * Handle viewing CDs by genre
      */
+/*
     private void handleViewCDsByGenre() {
         System.out.println("\n🎼 === CDs by Genre ===");
         System.out.print("Enter genre: ");
@@ -563,6 +583,7 @@ public class Main {
     /**
      * Handle borrowing a book
      */
+/*
     private void handleBorrowBook() {
         System.out.print("Enter Book ID to borrow: ");
         String bookId = scanner.nextLine().trim();
@@ -573,6 +594,7 @@ public class Main {
     /**
      * Handle borrowing a CD
      */
+/*
     private void handleBorrowCD() {
         System.out.print("Enter CD ID to borrow: ");
         String cdId = scanner.nextLine().trim();
@@ -583,6 +605,7 @@ public class Main {
     /**
      * Handle user's book loans
      */
+/*
     private void handleMyBookLoans() {
         System.out.println("\n📖 === My Book Loans ===");
         String currentUserId = authService.getCurrentUser().getId();
@@ -607,6 +630,7 @@ public class Main {
     /**
      * Handle user's CD loans
      */
+/*
     private void handleMyCDLoans() {
         System.out.println("\n💿 === My CD Loans ===");
         String currentUserId = authService.getCurrentUser().getId();
@@ -643,6 +667,7 @@ public class Main {
     /**
      * Handle user's fines
      */
+/*
     private void handleMyFines() {
         System.out.println("\n💰 === My Fines ===");
         String currentUserId = authService.getCurrentUser().getId();
@@ -735,6 +760,7 @@ public class Main {
     /**
      * Handle system statistics
      */
+/*
     private void handleSystemStatistics() {
         System.out.println("\n📊 === System Statistics ===");
         
@@ -870,6 +896,7 @@ public class Main {
      * Get integer input from user
      * @return integer input
      */
+/*
     private int getIntInput() {
         try {
             return Integer.parseInt(scanner.nextLine());
@@ -882,6 +909,7 @@ public class Main {
      * Get double input from user
      * @return double input
      */
+/*
     private double getDoubleInput() {
         try {
             return Double.parseDouble(scanner.nextLine());
@@ -894,6 +922,7 @@ public class Main {
      * Main method to start the application
      * @param args command line arguments
      */
+/*
     public static void main(String[] args) {
         try {
             Main app = new Main();
@@ -904,3 +933,4 @@ public class Main {
         }
     }
 }
+*/
