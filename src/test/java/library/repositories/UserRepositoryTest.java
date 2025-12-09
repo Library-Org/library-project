@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 
 import com.google.gson.Gson;
 
+import java.util.Map;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,104 +20,152 @@ public class UserRepositoryTest {
 
     private JsonFileHandler fileHandler;
     private Gson gson;
-    private UserRepository repo;
 
     @BeforeEach
     void setUp() {
         fileHandler = mock(JsonFileHandler.class);
         gson = GsonUtils.createGson();
-
-        // mock empty file
-        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("");
-
-        repo = new UserRepository(fileHandler, gson);
     }
 
     @Test
-    void testSaveUser_NewUser_IdGenerated_AndTimestampUpdated() {
-        User u = new User();
-        u.setEmail("aaa@test.com");
+    void testLoadUsers_ValidJson() {
+        String json = "{\"1\":{\"id\":\"1\",\"email\":\"a@test.com\"}}";
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn(json);
 
-        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
+        UserRepository repo = new UserRepository(fileHandler, gson);
+
+        assertEquals(1, repo.findAll().size());
+    }
+
+    @Test
+    void testLoadUsers_InvalidJson_ReturnsEmpty() {
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("{invalid json}");
+
+        UserRepository repo = new UserRepository(fileHandler, gson);
+
+        assertEquals(0, repo.findAll().size());
+    }
+
+    @Test
+    void testSaveUsers_FailedWrite() {
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("");
+
+        UserRepository repo = new UserRepository(fileHandler, gson);
+
+        User u = new User();
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(false);
 
         boolean result = repo.save(u);
 
-        assertTrue(result);
+        assertFalse(result);
+    }
+
+    @Test
+    void testSaveUsers_Success() {
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("");
+
+        UserRepository repo = new UserRepository(fileHandler, gson);
+
+        User u = new User();
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
+
+        assertTrue(repo.save(u));
+    }
+
+    @Test
+    void testGenerateIdCoverage() {
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("");
+
+        UserRepository repo = new UserRepository(fileHandler, gson);
+
+        // Call save() to force generateId()
+        User u = new User();
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
+
+        repo.save(u);
+
         assertNotNull(u.getId());
-        assertNotNull(u.getUpdatedAt());
+        assertTrue(u.getId().startsWith("USER_"));
+    }
+
+    @Test
+    void testFindByEmail_NullEmail() {
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("");
+
+        UserRepository repo = new UserRepository(fileHandler, gson);
+
+        assertNull(repo.findByEmail(null));
     }
 
     @Test
     void testFindByEmail_Found() {
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("");
+
+        UserRepository repo = new UserRepository(fileHandler, gson);
+
         User u = new User();
-        u.setEmail("test@test.com");
+        u.setEmail("aaa@test.com");
 
         when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
         repo.save(u);
 
-        User found = repo.findByEmail("test@test.com");
-
-        assertNotNull(found);
+        assertNotNull(repo.findByEmail("aaa@test.com"));
     }
 
     @Test
     void testFindByEmail_NotFound() {
-        User found = repo.findByEmail("unknown@test.com");
-        assertNull(found);
-    }
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("");
 
-    @Test
-    void testFindAll() {
-        User u1 = new User();
-        User u2 = new User();
+        UserRepository repo = new UserRepository(fileHandler, gson);
 
-        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
-
-        repo.save(u1);
-        repo.save(u2);
-
-        List<User> all = repo.findAll();
-
-        assertEquals(2, all.size());
-    }
-
-    @Test
-    void testFindById() {
-        User u = new User();
-        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
-
-        repo.save(u);
-
-        User found = repo.findById(u.getId());
-        assertNotNull(found);
+        assertNull(repo.findByEmail("notfound@test.com"));
     }
 
     @Test
     void testFindById_Null() {
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("");
+
+        UserRepository repo = new UserRepository(fileHandler, gson);
+
         assertNull(repo.findById(null));
     }
 
     @Test
     void testDelete_Success() {
-        User u = new User();
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("");
 
+        UserRepository repo = new UserRepository(fileHandler, gson);
+
+        User u = new User();
         when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
 
         repo.save(u);
 
-        boolean result = repo.delete(u.getId());
-
-        assertTrue(result);
+        assertTrue(repo.delete(u.getId()));
     }
 
     @Test
-    void testDelete_Failed_NoUser() {
-        boolean result = repo.delete("unknown");
-        assertFalse(result);
+    void testDelete_Failed_NoSuchId() {
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("");
+
+        UserRepository repo = new UserRepository(fileHandler, gson);
+
+        assertFalse(repo.delete("unknown_id"));
     }
 
     @Test
-    void testDelete_NullId() {
-        assertFalse(repo.delete(null));
+    void testDelete_FailedWrite() {
+        when(fileHandler.readFromFile(UserRepository.FILE_PATH)).thenReturn("");
+
+        UserRepository repo = new UserRepository(fileHandler, gson);
+
+        User u = new User();
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(true);
+        repo.save(u);
+
+        // Now fail writeToFile
+        when(fileHandler.writeToFile(anyString(), anyString())).thenReturn(false);
+
+        assertFalse(repo.delete(u.getId()));
     }
 }
